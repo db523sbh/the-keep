@@ -1,0 +1,35 @@
+---
+import { getFeed } from '../lib/feed';
+import FeedFilters from './FeedFilters.astro';
+import SocialCard from './cards/SocialCard.astro';
+import ReviewCard from './cards/ReviewCard.astro';
+import ShrineCard from './cards/ShrineCard.astro';
+import PortfolioCard from './cards/PortfolioCard.astro';
+
+const feed = await getFeed();
+---
+
+<FeedFilters />
+
+<ul class="feed">
+	{feed.map((item) => (
+		<li data-category={item.type}>
+			{item.type === 'social' && <SocialCard entry={item.entry} />}
+			{item.type === 'reviews' && <ReviewCard entry={item.entry} />}
+			{item.type === 'shrines' && <ShrineCard entry={item.entry} />}
+			{item.type === 'portfolio' && <PortfolioCard entry={item.entry} />}
+		</li>
+	))}
+</ul>
+
+<style>
+	.feed {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		max-width: 640px;
+	}
+</style>

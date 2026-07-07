@@ -1,0 +1,118 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	entry: CollectionEntry<'portfolio'>;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const formattedDate = data.date.toLocaleDateString('de-DE', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+});
+---
+
+<article class="card">
+	<div class="card-meta">
+		<span class="badge">Portfolio</span>
+		<time datetime={data.date.toISOString()}>{formattedDate}</time>
+	</div>
+	<h2>{data.title}</h2>
+	{data.cover && <img src={data.cover} alt={data.title} loading="lazy" />}
+	<p class="role">{data.role}</p>
+	<p class="summary">{data.summary}</p>
+	{data.tech.length > 0 && (
+		<ul class="tech">
+			{data.tech.map((item) => (
+				<li>{item}</li>
+			))}
+		</ul>
+	)}
+	<div class="body">
+		<Content />
+	</div>
+	{data.links && (data.links.live || data.links.repo) && (
+		<p class="links">
+			{data.links.live && <a href={data.links.live} target="_blank" rel="noopener noreferrer">Live</a>}
+			{data.links.live && data.links.repo && ' · '}
+			{data.links.repo && <a href={data.links.repo} target="_blank" rel="noopener noreferrer">Repo</a>}
+		</p>
+	)}
+</article>
+
+<style>
+	.card {
+		--accent: #5b4b8a;
+		border-left: 4px solid var(--accent);
+		padding: 1rem 1.25rem;
+		background: color-mix(in srgb, var(--accent) 6%, transparent);
+		border-radius: 0 0.5rem 0.5rem 0;
+	}
+
+	.card-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-size: 0.8rem;
+		color: #666;
+	}
+
+	.badge {
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		font-weight: 600;
+		color: var(--accent);
+	}
+
+	h2 {
+		margin: 0.4rem 0;
+		font-size: 1.1rem;
+	}
+
+	img {
+		max-width: 100%;
+		border-radius: 0.4rem;
+		margin: 0.5rem 0;
+	}
+
+	.role {
+		margin: 0;
+		font-weight: 600;
+		color: var(--accent);
+	}
+
+	.summary {
+		margin: 0.3rem 0;
+	}
+
+	.tech {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		padding: 0;
+		margin: 0.5rem 0;
+	}
+
+	.tech li {
+		font-size: 0.75rem;
+		padding: 0.15rem 0.5rem;
+		border: 1px solid var(--accent);
+		border-radius: 999px;
+		color: var(--accent);
+	}
+
+	.body {
+		font-size: 0.95rem;
+	}
+
+	.links {
+		margin: 0.6rem 0 0;
+		font-size: 0.85rem;
+	}
+</style>

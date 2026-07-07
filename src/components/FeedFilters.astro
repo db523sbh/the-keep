@@ -1,0 +1,83 @@
+---
+const categories = [
+	{ key: 'social', label: 'Social' },
+	{ key: 'reviews', label: 'Reviews' },
+	{ key: 'shrines', label: 'Shrines' },
+	{ key: 'portfolio', label: 'Portfolio' },
+] as const;
+---
+
+<div class="filters" role="group" aria-label="Nach Kategorie filtern">
+	<button type="button" class="chip is-active" data-filter="all">Alle</button>
+	{categories.map(({ key, label }) => (
+		<button type="button" class="chip is-active" data-filter={key}>{label}</button>
+	))}
+</div>
+
+<style>
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.chip {
+		font: inherit;
+		font-size: 0.85rem;
+		padding: 0.35rem 0.9rem;
+		border-radius: 999px;
+		border: 1px solid #ccc;
+		background: transparent;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.chip:hover {
+		border-color: #999;
+	}
+
+	.chip.is-active {
+		background: #222;
+		border-color: #222;
+		color: #fff;
+	}
+</style>
+
+<script>
+	const categories = ['social', 'reviews', 'shrines', 'portfolio'];
+	let active = new Set(categories);
+
+	const buttons = document.querySelectorAll<HTMLButtonElement>('.filters .chip');
+	const items = document.querySelectorAll<HTMLElement>('[data-category]');
+
+	function sync() {
+		items.forEach((item) => {
+			const category = item.dataset.category!;
+			item.hidden = !active.has(category);
+		});
+
+		buttons.forEach((button) => {
+			const filter = button.dataset.filter!;
+			const isActive = filter === 'all' ? active.size === categories.length : active.has(filter);
+			button.classList.toggle('is-active', isActive);
+		});
+	}
+
+	buttons.forEach((button) => {
+		button.addEventListener('click', () => {
+			const filter = button.dataset.filter!;
+			if (filter === 'all') {
+				active = new Set(categories);
+			} else if (active.has(filter)) {
+				active.delete(filter);
+			} else {
+				active.add(filter);
+			}
+			sync();
+		});
+	});
+
+	sync();
+</script>
